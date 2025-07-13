@@ -20,7 +20,7 @@ Sliding Window Log Fixes That:
 
 It tracks exact timestamps of every request.
 
- 1. Each time a new request comes in:
+1. Each time a new request comes in:
   
 2. Remove old requests older than (now - window size)
   
@@ -36,7 +36,8 @@ It prevents bursts at boundaries by always keeping a real-time view of the last 
 
 Requests are evenly spread out because the limiter checks "sliding" windows, not fixed chunks.
 
-* Hinglish
+** Hinglish**
+
 * Tum har request ka exact time store karte ho.
 * Har nayi request ke time pe:
 * Tum check karte ho ki last 60 seconds me kitni request already aayi hain
@@ -48,4 +49,120 @@ Jab bhi request aaye, tum:
 * Check karte ho last X second me kaun-kaun si request valid hai (jo window ke andar aati hai)
 * Jo bahar ho gayi (old ho gayi) unko hata do
 * Toh tumhara rate check sliding way me hota hai, continuous window ke basis pe — not rigid like fixed window
+
+
+Sliding Window Log (Limit = 3 req / 10 sec)
+
+Time →   1    2    3    4    5    6    7    8    9   10   11   12
+Req →   ✅   ✅   ✅   ❌   -    -    -    -    -    -    -    ✅
+
+Explanation:
+t = 1   → allow → [1]
+t = 2   → allow → [1, 2]
+t = 3   → allow → [1, 2, 3]
+t = 4   → reject (already 3 in last 10 sec)
+t = 12  → remove 1, 2 → only 3 left → allow → [3, 12]
+
+
+🧠 Data Structure Used:
+Queue / LinkedList (or Deque) to store timestamps
+
+We need:
+
+Fast insertion at end (O(1))
+
+Fast removal from front (O(1))
+
+Count of elements in the current window
+
+📌 So we use:
+➡️ Queue<Long> (e.g., LinkedList in Java)
+
+**Implementation**
+
+```java
+import java.util.Deque;
+import java.util.LinkedList;
+
+/**
+ * Sliding Window Log-based Rate Limiter
+ * Limits the number of requests allowed in a sliding time window
+ */
+public class SlidingWindowLogRateLimiter {
+    private final int limit;  // Max number of requests allowed
+    private final long windowSizeMillis;  // Time window in milliseconds
+    private final Deque<Long> requestTimestamps = new LinkedList<>();  // Stores timestamps of allowed requests
+
+    public SlidingWindowLogRateLimiter(int limit, long windowSizeMillis) {
+        this.limit = limit;
+        this.windowSizeMillis = windowSizeMillis;
+    }
+
+    /**
+     * Checks if a new request is allowed at current time
+     */
+    public synchronized boolean allowRequest() {
+        long now = System.currentTimeMillis();
+
+        // Step 1: Remove timestamps older than (now - window)
+        while (!requestTimestamps.isEmpty() && requestTimestamps.peekFirst() <= now - windowSizeMillis) {
+            requestTimestamps.pollFirst();  // remove oldest
+        }
+
+        // Step 2: Allow if current request count < limit
+        if (requestTimestamps.size() < limit) {
+            requestTimestamps.offerLast(now);  // record current request time
+            return true;  // allow
+        }
+
+        return false;  // reject
+    }
+
+    /**
+     * Main method to test the rate limiter
+     */
+    public static void main(String[] args) throws InterruptedException {
+        // Allow 3 requests per 10 seconds
+        SlidingWindowLogRateLimiter rateLimiter = new SlidingWindowLogRateLimiter(3, 10_000);
+
+        // Simulate 5 rapid requests
+        for (int i = 1; i <= 5; i++) {
+            boolean allowed = rateLimiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+
+            // Wait 1 second between requests
+            Thread.sleep(1000);
+        }
+
+        // Wait for window to expire
+        System.out.println("⏳ Waiting 10 seconds to reset window...");
+        Thread.sleep(10_000);
+
+        // Make 2 more requests after window reset
+        for (int i = 6; i <= 7; i++) {
+            boolean allowed = rateLimiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+        }
+    }
+}
+
+```
+
+⚙️ Time Complexity:
+O(1) average for insert/remove (amortized)
+
+Memory usage = proportional to number of requests per window
+
+📈 Pros:
+✅ Smooth rate limiting
+
+✅ No edge bursts
+
+❌ Cons:
+🧠 Slightly more complex than fixed window
+
+🧠 Memory grows with number of requests per user
+
+
+
 
