@@ -53,15 +53,72 @@ Jab bhi request aaye, tum:
 
 Sliding Window Log (Limit = 3 req / 10 sec)
 
-Time →   1    2    3    4    5    6    7    8    9   10   11   12
-Req →   ✅   ✅   ✅   ❌   -    -    -    -    -    -    -    ✅
+import java.util.Deque;
+import java.util.LinkedList;
 
-Explanation:
-t = 1   → allow → [1]
-t = 2   → allow → [1, 2]
-t = 3   → allow → [1, 2, 3]
-t = 4   → reject (already 3 in last 10 sec)
-t = 12  → remove 1, 2 → only 3 left → allow → [3, 12]
+/**
+ * Sliding Window Log-based Rate Limiter
+ * Limits the number of requests allowed in a sliding time window
+ */
+public class SlidingWindowLogRateLimiter {
+    private final int limit;  // Max number of requests allowed
+    private final long windowSizeMillis;  // Time window in milliseconds
+    private final Deque<Long> requestTimestamps = new LinkedList<>();  // Stores timestamps of allowed requests
+
+    public SlidingWindowLogRateLimiter(int limit, long windowSizeMillis) {
+        this.limit = limit;
+        this.windowSizeMillis = windowSizeMillis;
+    }
+
+    /**
+     * Checks if a new request is allowed at current time
+     */
+    public synchronized boolean allowRequest() {
+        long now = System.currentTimeMillis();
+
+        // Step 1: Remove timestamps older than (now - window)
+        while (!requestTimestamps.isEmpty() && requestTimestamps.peekFirst() <= now - windowSizeMillis) {
+            requestTimestamps.pollFirst();  // remove oldest
+        }
+
+        // Step 2: Allow if current request count < limit
+        if (requestTimestamps.size() < limit) {
+            requestTimestamps.offerLast(now);  // record current request time
+            return true;  // allow
+        }
+
+        return false;  // reject
+    }
+
+    /**
+     * Main method to test the rate limiter
+     */
+    public static void main(String[] args) throws InterruptedException {
+        // Allow 3 requests per 10 seconds
+        SlidingWindowLogRateLimiter rateLimiter = new SlidingWindowLogRateLimiter(3, 10_000);
+
+        // Simulate 5 rapid requests
+        for (int i = 1; i <= 5; i++) {
+            boolean allowed = rateLimiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+
+            // Wait 1 second between requests
+            Thread.sleep(1000);
+        }
+
+        // Wait for window to expire
+        System.out.println("⏳ Waiting 10 seconds to reset window...");
+        Thread.sleep(10_000);
+
+        // Make 2 more requests after window reset
+        for (int i = 6; i <= 7; i++) {
+            boolean allowed = rateLimiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+        }
+    }
+}
+<img width="820" height="428" alt="image" src="https://github.com/user-attachments/assets/901417fe-0f19-450d-8518-d2f4c7e22ec2" />
+
 
 
 🧠 Data Structure Used:
