@@ -67,6 +67,17 @@ public class RateLimiterManager {
     }
 }
 ```
+** How It Works**
+  1. Each user is identified by a userId.
+  
+  2. For each incoming request, the manager:
+  
+  3. Looks up the user's rate limiter in the map.
+  
+  4. If not found, it creates one (putIfAbsent is atomic).
+  
+  5. Calls allowRequest() on the user's limiter.
+
 
 ##### Q1. Why is the method synchronized?"
 ✅ Reason:
