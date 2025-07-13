@@ -88,15 +88,23 @@ Safe update of shared state: requestCount, windowStart
 
 #### Q2. Why ConcurrentHashMap?
 It’s a thread-safe implementation of Map:
+
 Internally splits the map into segments/buckets
+
 Allows multiple threads to access different keys concurrently
+
 Operations like putIfAbsent(), get(), computeIfAbsent() are atomic
+
 Performance is much better than using Collections.synchronizedMap() or making whole method synchronized
 
 #### Q3. Why HashMap is Unsafe
 HashMap is not thread-safe:
 If 2 threads access the map simultaneously:
+
 One inserts while another reads → race condition
+
 Internal structure (buckets) can become corrupt
+
 Can lead to ConcurrentModificationException
+
 Or even infinite loops in earlier JDKs during rehashing (very dangerous)
