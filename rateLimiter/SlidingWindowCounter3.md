@@ -5,9 +5,9 @@ Issue	Explanation
 ```
 | Issue              | Explanation                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| **Memory**         | Stores **each request timestamp** → high memory if traffic is high |
-| **Processing**     | On each request, it loops to remove old entries (O(n))             |
-| **Bursty Traffic** | You can get bursts near window edges (e.g., 6 requests in 0.1s)    |
+|   Memory           | Stores **each request timestamp** → high memory if traffic is high |
+|   Processing       | On each request, it loops to remove old entries (O(n))             |
+|  Bursty Traffic    | You can get bursts near window edges (e.g., 6 requests in 0.1s)    |
 ```
 
 
