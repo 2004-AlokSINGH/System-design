@@ -46,9 +46,8 @@ Let’s say we allow 3 requests per 10s, with 10 buckets (1s each)
 
 
 🧃 Sliding Effect:
-Every second, the oldest bucket gets discarded
-
-This mimics a "sliding" time window without storing timestamps
+- Every second, the oldest bucket gets discarded
+- This mimics a "sliding" time window without storing timestamps
 
 Example:
 At t = 12s, bucket at t = 1s is too old → dropped from sum
@@ -66,11 +65,9 @@ New request checks sum of buckets [t=2s → t=12s]
 
 So:
 
-Faster than log method
-
-Memory-bound (doesn’t grow with traffic)
-
-Smoother control over request spikes
+- Faster than log method
+- Memory-bound (doesn’t grow with traffic)
+- Smoother control over request spikes
 
 How it is better?
 ```
@@ -87,8 +84,67 @@ How it is better?
 It’s a tradeoff: we give up a little accuracy (exact timestamps) for efficiency and scalability.
 
 ⛔ When Not Ideal?
-If you need precise timing-based rejection (e.g., payment systems)
+- If you need precise timing-based rejection (e.g., payment systems)
+- If time window is too small (1s), then buckets may become inaccurate
 
-If time window is too small (1s), then buckets may become inaccurate
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class SlidingWindowCounterRateLimiter {
+    private final int limit;
+    private final long windowSizeMillis;
+    private final int bucketCount;
+    private final long bucketSizeMillis;
+    private final Map<Long, Integer> buckets = new HashMap<>();
+
+    public SlidingWindowCounterRateLimiter(int limit, long windowSizeMillis, int bucketCount) {
+        this.limit = limit;
+        this.windowSizeMillis = windowSizeMillis;
+        this.bucketCount = bucketCount;
+        this.bucketSizeMillis = windowSizeMillis / bucketCount;
+    }
+
+    public synchronized boolean allowRequest() {
+        long now = System.currentTimeMillis();
+        long currentBucket = now / bucketSizeMillis;
+
+        // Clean up old buckets
+        buckets.entrySet().removeIf(entry -> (now - (entry.getKey() * bucketSizeMillis)) >= windowSizeMillis);
+
+        // Count requests in the current window
+        int requestCount = 0;
+        for (Map.Entry<Long, Integer> entry : buckets.entrySet()) {
+            requestCount += entry.getValue();
+        }
+
+        if (requestCount < limit) {
+            buckets.put(currentBucket, buckets.getOrDefault(currentBucket, 0) + 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        SlidingWindowCounterRateLimiter limiter = new SlidingWindowCounterRateLimiter(3, 10000, 10);
+
+        for (int i = 1; i <= 5; i++) {
+            boolean allowed = limiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+            Thread.sleep(1000);
+        }
+
+        System.out.println("⏳ Waiting 10 seconds...");
+        Thread.sleep(10000);
+
+        for (int i = 6; i <= 7; i++) {
+            boolean allowed = limiter.allowRequest();
+            System.out.println("Request " + i + ": " + (allowed ? "✅ Allowed" : "❌ Rejected"));
+        }
+    }
+}
+```
+
 
 
