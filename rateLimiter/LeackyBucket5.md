@@ -53,11 +53,13 @@ Because Leaky Bucket says:
 - **“I don’t care how fast you pour water — I only leak at 1 drop per second.”**
 
 ✅ Summary – Why Leaky Bucket Is Unique
+```
 Concept	Leaky Bucket
-Smooth traffic	            ✅ Yes (strict)
-Drops bursts	              ✅ Immediately if rate exceeded
-Processing at constant pace	✅ Always
-Old algo weakness solved	  ✅ Yes – burst handling + overload safety
+Smooth traffic	               ✅ Yes (strict)
+Drops bursts	                 ✅ Immediately if rate exceeded
+Processing at constant pace	  ✅ Always
+Old algo weakness solved	     ✅ Yes – burst handling + overload safety
+```
 
 
 ```java
