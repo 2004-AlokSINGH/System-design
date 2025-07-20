@@ -2,10 +2,11 @@
 ```
 | Algorithm                  | Problem It Solves             | Weakness                             |
 | -------------------------- | ----------------------------- | ------------------------------------ |
-| **Fixed Window Counter**   | Easy to implement burst limit | Allows sudden burst at window edge   |
-| **Sliding Window Log**     | Precise burst tracking        | Memory-heavy (stores all timestamps) |
-| **Sliding Window Counter** | Approximates smoother rate    | Still allows short bursts            |
+| Fixed Window Counter       | Easy to implement burst limit | Allows sudden burst at window edge   |
+| Sliding Window Log         | Precise burst tracking        | Memory-heavy (stores all timestamps) |
+| Sliding Window Counter     | Approximates smoother rate    | Still allows short bursts            |
 
+```
  Need – Why Leaky Bucket?
 🔥 Problem in Real Systems:
 APIs often receive spikes of requests (burst traffic)
@@ -22,7 +23,6 @@ Even if average request rate is acceptable, sudden bursts can:
 - Water leaks out at a fixed rate.
 - If the bucket overflows, new requests are dropped (rejected).
 
-```
 
 💧 What Leaky Bucket Solves (That Others Don’t)
 ```
