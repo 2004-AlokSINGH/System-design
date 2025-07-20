@@ -23,11 +23,14 @@ Imprecise under bursty traffic	Doesn’t fairly account for traffic near boundar
 ```
 
 ✅ How It Solves That
-Feature	How it Helps
-Smoother transition	Interpolates between current and previous windows
-No memory growth	Only 2 counters needed — fixed memory
-Constant time	O(1) processing per request
-Good for APIs	Balances speed and fairness for high-QPS systems
+```
+| Feature                 | How it Helps                                      |
+| ----------------------- | ------------------------------------------------- |
+| **Smoother transition** | Interpolates between current and previous windows |
+| **No memory growth**    | Only 2 counters needed — fixed memory             |
+| **Constant time**       | O(1) processing per request                       |
+| **Good for APIs**       | Balances speed and fairness for high-QPS systems  |
+```
 
 📦 Basic Setup:
 Setting	Value
@@ -57,16 +60,14 @@ Since current time = 70 sec → we’re 10 sec into current 60 sec window
 We now interpolate:
 
 🔢 Total Weighted Count:
-makefile
-Copy
-Edit
+```
 effectiveCount = (1 - 0.1667) * prevCount + 0.1667 * currCount
                ≈ 0.833 * 8 + 0.167 * 3
                ≈ 6.66 + 0.5 ≈ 7.16
 👉 Since 7.16 < 10 → ✅ Allow request
 
 If it was > 10 → ❌ Reject request
-
+```
 
 ```java
 
