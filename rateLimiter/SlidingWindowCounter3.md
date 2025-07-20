@@ -19,17 +19,17 @@ Instead of tracking each request, group requests into time buckets.
 📦 How?
 Divide the total window (e.g., 10s) into smaller buckets (e.g., 10 buckets of 1s each)
 
-When a request comes in:
+### ✅ Sliding Window Counter Algorithm (Steps)
 
-Determine which bucket it falls into
+1. **When a request comes in:**
+   - 1.1. Determine which time bucket the request falls into.
+   - 1.2. Increment the counter for that bucket.
 
-Increment the counter for that bucket
+2. **To check if a request should be allowed:**
+   - 2.1. Sum the counts of all buckets in the sliding window.
+   - 2.2. If the total count is **less than the allowed limit**, then **allow the request**.
+   - 2.3. Else, **reject the request**.
 
-To check if a request should be allowed:
-
-Sum all counts in the sliding window
-
-If total < limit → allow the request
 
 🧊 Visualization:
 Let’s say we allow 3 requests per 10s, with 10 buckets (1s each)
