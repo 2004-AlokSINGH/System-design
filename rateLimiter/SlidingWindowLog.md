@@ -139,6 +139,16 @@ public class SlidingWindowLogRateLimiter {
 
 ```
 
+```
+| Step                | What Happens?                                    |
+| ------------------- | ------------------------------------------------ |
+| Request comes in    | Current timestamp is taken                       |
+| Clean old entries   | Timestamps older than `now - window` are removed |
+| Check size of queue | If less than limit → allow & store timestamp     |
+| Else                | Reject request                                   |
+```
+
+
 ⚙️ Time Complexity:
 O(1) average for insert/remove (amortized)
 
