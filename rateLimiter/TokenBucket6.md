@@ -164,69 +164,101 @@ public class Main {
 }
 
 ```
+# Distributed Rate Limiter - Real Life Flow Explanation
 
-🎯 Scenario:
-A user hits your API endpoint. The system must allow or reject the request based on rate limits, considering distributed app servers.
+## Scenario:
 
-🪜 Step-by-Step Flow Explanation
-1️⃣ User Sends API Request
-A client (browser, mobile app, service) sends an HTTP request to an API endpoint.
+A user sends API requests to a large-scale service (e.g., Google Maps API / Tower Research trading API). The system must ensure the user does not exceed their rate limit (e.g., 100 requests per second).
 
-Example: GET /user/profile
+---
 
-2️⃣ API Gateway / CDN (Optional Edge Layer)
-First point of contact.
+## Step-by-Step Flow:
 
-Basic rate limits/DDoS protections can be enforced here (e.g., AWS API Gateway, Cloudflare).
+### 1. API Request Hits API Gateway
 
-If passed, forwards the request to backend load balancer.
+* User sends an API request.
+* API Gateway (e.g., Cloudflare, AWS API Gateway, NGINX) is the first entry point.
+* **Optional:** Perform edge-level rate limiting to block obvious abuse (DDoS filtering).
 
-3️⃣ Load Balancer Distributes Request
-Load Balancer (ELB, NGINX, Envoy) picks an available App Server.
+### 2. Request Routed to Load Balancer
 
-App servers are stateless microservices horizontally scaled.
+* API Gateway forwards allowed requests to a Load Balancer.
+* Load Balancer distributes traffic across multiple App Server instances.
 
-4️⃣ App Server Receives Request
-The App Server checks the userId / API Key from the request.
+### 3. App Server Receives the Request
 
-App Server does not maintain in-memory rate limits to avoid inconsistency (since there are multiple nodes).
+* The selected App Server node (stateless microservice) receives the request.
+* Before processing, it must check if this request exceeds the user’s rate limit.
 
-It prepares a Redis query to check and update the token bucket.
+### 4. App Server Queries Redis (Token Bucket Check)
 
-5️⃣ App Server Calls Redis Lua Script (Token Bucket Logic)
-Redis stores per-user token bucket state:
+* App Server connects to a **Redis Cluster**.
+* Executes a **Lua script** to:
 
-Key: rate_limit:{userId}
+  * Refill tokens based on time elapsed since last request.
+  * Check if tokens are available.
+  * Consume token if request is allowed.
+  * All actions are done **atomically** within Redis.
 
-Fields: {tokens_remaining, last_refill_timestamp}
+### 5. Redis Returns Rate Limit Decision
 
-Lua script runs atomically in Redis:
+* Redis returns result: **Allowed** or **Rate Limited**.
+* This ensures all App Servers see the same token state (global consistency).
 
-Calculates tokens to refill based on current time.
+### 6. App Server Proceeds or Rejects
 
-Checks if requested tokens are available.
+* If allowed: App Server processes the request (business logic).
+* If rate-limited: Returns HTTP 429 (Too Many Requests) to the user.
 
-If yes → decrements token count and returns “allowed”.
+### 7. Optional: Persistent DB for User Plan Config
 
-If no → returns “rate limit exceeded”.
+* If rate limits vary per user (Free, Premium, VIP), App Servers can fetch plan configs from a **Persistent Database (RDBMS / NoSQL)**.
+* These configs can be cached in Redis for faster lookups.
 
-6️⃣ Redis Responds (Allow / Deny)
-Response is fast (1-5ms).
+### 8. Token Bucket Refill Over Time
 
-App server receives:
+* Tokens for each user in Redis are refilled lazily on access, based on refill rate.
+* Idle users accumulate tokens up to capacity, allowing bursts.
 
-✅ Allow → proceeds to handle request.
+---
 
-❌ Rate Limit Exceeded → responds with HTTP 429 (Too Many Requests).
+## Summary of Components:
 
-7️⃣ Request Processing (If Allowed)
-If allowed, the App Server processes business logic.
+| Component     | Role                                              |
+| ------------- | ------------------------------------------------- |
+| API Gateway   | Entry point; Optional DDoS & rate limiting        |
+| Load Balancer | Distributes requests across App Servers           |
+| App Server    | Stateless service; calls Redis for rate limiting  |
+| Redis Cluster | Central token storage; ensures global consistency |
+| Persistent DB | Stores user plan configs (optional)               |
 
-Queries DB or Cache (if needed).
+---
 
-Sends back a 200 OK response to the client.
+## Advantages of This Flow:
 
-8️⃣ Optional Persistent DB (For User Plans)
-If rate limit configs (like Free/VIP user limits) are dynamic, App Servers may fetch per-user rate limits from a DB/config service.
+* **Scalable**: Can handle millions of requests per second.
+* **Accurate Global Limits**: Redis ensures consistency across all app nodes.
+* **Low Latency (\~ms level)**: Lua scripts in Redis are fast and atomic.
+* **Flexible Plans**: Different rate limits per user possible.
+* **Burst Support**: Token Bucket allows controlled bursts after idle periods.
 
-These are cached to reduce DB hits.
+---
+
+## Example User Flow:
+
+1. User sends burst of 50 requests.
+2. App Servers call Redis; 50 tokens are consumed if available.
+3. If user’s plan allows (e.g., 100 req/sec), all 50 requests pass.
+4. Subsequent requests within the same second may be rate-limited.
+5. After 1 second, refill adds new tokens.
+
+---
+
+## Future Optimizations:
+
+* **Local token warm-cache** for reducing Redis hits (approximate rate limits).
+* **Sliding Window Counters** for smoother rate limiting.
+* **Batch Token Consumption** for high throughput systems.
+* **Distributed Redis Cluster with Sharding** for extreme scale.
+
+---
