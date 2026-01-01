@@ -48,7 +48,7 @@ Patterns that deal with object creation mechanisms, trying to create objects in 
    - Simplifies client usage
 
 **Related Files:**
-- [creational/builder/note.md](creational/builder/note.md) — Detailed explanation with telescoping constructor examples
+- [creational/builder/note.md](lld/designPattern/creational/builder/note.md) — Detailed explanation with telescoping constructor examples
 - [creational/builder/Builder.java](creational/builder/Builder.java) — Interface
 - [creational/builder/HttpReq.java](creational/builder/HttpReq.java) — Simple product
 - [creational/builder/HttpReq2.java](creational/builder/HttpReq2.java) — Complex product with nested builder
