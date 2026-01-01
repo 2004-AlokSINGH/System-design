@@ -48,11 +48,11 @@ Patterns that deal with object creation mechanisms, trying to create objects in 
    - Simplifies client usage
 
 **Related Files:**
-- [creational/builder/note.md](lld/designPattern/creational/builder/note.md) — Detailed explanation with telescoping constructor examples
-- [creational/builder/Builder.java](creational/builder/Builder.java) — Interface
-- [creational/builder/HttpReq.java](creational/builder/HttpReq.java) — Simple product
-- [creational/builder/HttpReq2.java](creational/builder/HttpReq2.java) — Complex product with nested builder
-- [creational/builder/HttpReqBuilder.java](creational/builder/HttpReqBuilder.java) — Standalone builder
+- [creational/builder/note.md](designPattern/creational/builder/note.md) — Detailed explanation with telescoping constructor examples
+- [creational/builder/Builder.java](designPattern/creational/builder/Builder.java) — Interface
+- [creational/builder/HttpReq.java](designPattern/creational/builder/HttpReq.java) — Simple product
+- [creational/builder/HttpReq2.java](designPattern/creational/builder/HttpReq2.java) — Complex product with nested builder
+- [creational/builder/HttpReqBuilder.java](designPattern/creational/builder/HttpReqBuilder.java) — Standalone builder
 
 **Key Insight:** Separating construction from representation allows flexible, readable object creation while maintaining immutability.
 
@@ -128,11 +128,8 @@ Creates families of related objects through multiple factory methods.
    - Improves testability
 
 **Related Files:**
-- [behavioral/strategy/README.md](behavioral/strategy/README.md) — Similar approach (context pattern)
-- [creational/factory/Notification.java](creational/factory/Notification.java) — Product interface
-- [creational/factory/EmailNotification.java](creational/factory/EmailNotification.java) — Concrete product
-- [creational/factory/NotificationCreatorFactoryMethod.java](creational/factory/NotificationCreatorFactoryMethod.java) — Factory method approach
-- [creational/factory/NotificationSimpleFactory.java](creational/factory/NotificationSimpleFactory.java) — Simple factory approach
+- [behavioral/strategy/README.md](designPattern/behavioral/strategy/README.md) — Similar approach (context pattern)
+
 
 **Key Insight:** Defer instantiation to subclasses or factory methods, keeping clients independent of concrete types.
 
@@ -166,7 +163,7 @@ Creates families of related objects through multiple factory methods.
    - **Important:** Handle shallow vs. deep copy correctly
    - Shallow copy: Fast but shares mutable references
    - Deep copy: Slower but fully independent clones
-   - See [creational/prototype/copyNote.md](creational/prototype/copyNote.md) for detailed explanation
+   - See [creational/prototype/copyNote.md](designPattern/creational/prototype/copyNote.md) for detailed explanation
 
 3. **Create a Prototype Registry** (optional, e.g., `EnemyRegistry`)
    - Store pre-configured prototypes
@@ -189,10 +186,7 @@ Creates families of related objects through multiple factory methods.
   - Modifications to one clone shouldn't affect others
 
 **Related Files:**
-- [creational/prototype/copyNote.md](creational/prototype/copyNote.md) — Detailed analysis of shallow vs. deep copy
-- [creational/prototype/Enemy.java](creational/prototype/Enemy.java) — Concrete prototype
-- [creational/prototype/EnemyPrototype.java](creational/prototype/EnemyPrototype.java) — Prototype interface
-- [creational/prototype/EnemyRegistry.java](creational/prototype/EnemyRegistry.java) — Prototype storage
+- [creational/prototype/copyNote.md](designPattern/creational/prototype/copyNote.md) — Detailed analysis of shallow vs. deep copy
 
 **Key Insight:** Let objects clone themselves; avoids coupling to concrete classes and expensive re-initialization.
 
@@ -288,10 +282,10 @@ public class BillPughSingleton {
 - Preferred in modern Java
 
 **Related Files:**
-- [creational/singleton/note.md](creational/singleton/note.md) — Overview and basic concepts
-- [creational/singleton/LazySingleton.java](creational/singleton/LazySingleton.java) — Synchronized approach
-- [creational/singleton/DoubleCheckedSingleton.java](creational/singleton/DoubleCheckedSingleton.java) — Optimized approach
-- [creational/singleton/ThreadSafeSingleton.java](creational/singleton/ThreadSafeSingleton.java) — Thread-safe variant
+- [creational/singleton/note.md](designPattern/creational/singleton/note.md) — Overview and basic concepts
+- [creational/singleton/LazySingleton.java](designPattern/creational/singleton/LazySingleton.java) — Synchronized approach
+- [creational/singleton/DoubleCheckedSingleton.java](designPattern/creational/singleton/DoubleCheckedSingleton.java) — Optimized approach
+- [creational/singleton/ThreadSafeSingleton.java](designPattern/creational/singleton/ThreadSafeSingleton.java) — Thread-safe variant
 
 **Key Insight:** Control instance creation strictly; balance between thread safety, lazy loading, and performance overhead.
 
@@ -347,12 +341,12 @@ public void payment(String method, int amount) {
    - Example: `PaymentFactory.getStrategy(methodType)`
 
 **Related Files:**
-- [behavioral/strategy/PaymentStrategy.java](behavioral/strategy/PaymentStrategy.java) — Interface
-- [behavioral/strategy/UpiPaymentStrategy.java](behavioral/strategy/UpiPaymentStrategy.java) — Concrete strategy
-- [behavioral/strategy/CardPaymentStrategy.java](behavioral/strategy/CardPaymentStrategy.java) — Concrete strategy
-- [behavioral/strategy/PaymentSystem.java](behavioral/strategy/PaymentSystem.java) — Context class
-- [behavioral/strategy/PaymentClient.java](behavioral/strategy/PaymentClient.java) — Client usage
-- [behavioral/strategy/README.md](behavioral/strategy/README.md) — Detailed example
+- [behavioral/strategy/PaymentStrategy.java](designPattern/behavioral/strategy/PaymentStrategy.java) — Interface
+- [behavioral/strategy/UpiPaymentStrategy.java](designPattern/behavioral/strategy/UpiPaymentStrategy.java) — Concrete strategy
+- [behavioral/strategy/CardPaymentStrategy.java](designPattern/behavioral/strategy/CardPaymentStrategy.java) — Concrete strategy
+- [behavioral/strategy/PaymentSystem.java](designPattern/behavioral/strategy/PaymentSystem.java) — Context class
+- [behavioral/strategy/PaymentClient.java](designPattern/behavioral/strategy/PaymentClient.java) — Client usage
+- [behavioral/strategy/README.md](designPattern/behavioral/strategy/README.md) — Detailed example
 
 **Benefits:**
 - Eliminates conditional logic
@@ -430,10 +424,10 @@ public abstract class ModelTrainer {
 ```
 
 **Related Files:**
-- [behavioral/template/note.md](behavioral/template/note.md) — Detailed explanation with UML diagram
-- [behavioral/template/ModelTrainer.java](behavioral/template/ModelTrainer.java) — Abstract template class
-- [behavioral/template/MLModel.java](behavioral/template/MLModel.java) — Concrete implementation
-- [behavioral/template/Client.java](behavioral/template/Client.java) — Client usage
+- [behavioral/template/note.md](designPattern/behavioral/template/note.md) — Detailed explanation with UML diagram
+- [behavioral/template/ModelTrainer.java](designPattern/behavioral/template/ModelTrainer.java) — Abstract template class
+- [behavioral/template/MLModel.java](designPattern/behavioral/template/MLModel.java) — Concrete implementation
+- [behavioral/template/Client.java](designPattern/behavioral/template/Client.java) — Client usage
 
 **Benefits:**
 - Enforces algorithm structure
@@ -507,12 +501,12 @@ for (String song : playlist.getSongs()) {
    ```
 
 **Related Files:**
-- [behavioral/iterator/note.md](behavioral/iterator/note.md) — Comprehensive explanation with examples
-- [behavioral/iterator/Iteratorr.java](behavioral/iterator/Iteratorr.java) — Iterator interface
-- [behavioral/iterator/IterableCollection.java](behavioral/iterator/IterableCollection.java) — Collection interface
-- [behavioral/iterator/ConretePlaylist.java](behavioral/iterator/ConretePlaylist.java) — Concrete collection
-- [behavioral/iterator/PlayListItertor.java](behavioral/iterator/PlayListItertor.java) — Concrete iterator
-- [behavioral/iterator/MusicPlayer.java](behavioral/iterator/MusicPlayer.java) — Client usage
+- [behavioral/iterator/note.md](designPattern/behavioral/iterator/note.md) — Comprehensive explanation with examples
+- [behavioral/iterator/Iteratorr.java](designPattern/behavioral/iterator/Iteratorr.java) — Iterator interface
+- [behavioral/iterator/IterableCollection.java](designPattern/behavioral/iterator/IterableCollection.java) — Collection interface
+- [behavioral/iterator/ConretePlaylist.java](designPattern/behavioral/iterator/ConretePlaylist.java) — Concrete collection
+- [behavioral/iterator/PlayListItertor.java](designPattern/behavioral/iterator/PlayListItertor.java) — Concrete iterator
+- [behavioral/iterator/MusicPlayer.java](designPattern/behavioral/iterator/MusicPlayer.java) — Client usage
 
 **Benefits:**
 - Hides collection internals
@@ -680,11 +674,11 @@ image.display();  // Finally use it
 | **Smart Proxy** | Add behavior | Logging, reference counting, cleanup |
 
 **Related Files:**
-- [structural/proxy/note.md](structural/proxy/note.md) — Detailed explanation with examples
-- [structural/proxy/Image.java](structural/proxy/Image.java) — Subject interface
-- [structural/proxy/HighResolutionImage.java](structural/proxy/HighResolutionImage.java) — Real subject
-- [structural/proxy/ImageProxy.java](structural/proxy/ImageProxy.java) — Proxy implementation
-- [structural/proxy/Client.java](structural/proxy/Client.java) — Client usage
+- [structural/proxy/note.md](designPattern/structural/proxy/note.md) — Detailed explanation with examples
+- [structural/proxy/Image.java](designPattern/structural/proxy/Image.java) — Subject interface
+- [structural/proxy/HighResolutionImage.java](designPattern/structural/proxy/HighResolutionImage.java) — Real subject
+- [structural/proxy/ImageProxy.java](designPattern/structural/proxy/ImageProxy.java) — Proxy implementation
+- [structural/proxy/Client.java](designPattern/structural/proxy/Client.java) — Client usage
 
 **Benefits:**
 - Defers expensive operations
@@ -774,11 +768,11 @@ public int getSize() {  // In Folder class
 ```
 
 **Related Files:**
-- [structural/composite/note.md](structural/composite/note.md) — Brief explanation
-- [structural/composite/FileSystemItem.java](structural/composite/FileSystemItem.java) — Component interface
-- [structural/composite/File.java](structural/composite/File.java) — Leaf class
-- [structural/composite/Folder.java](structural/composite/Folder.java) — Composite class
-- [structural/composite/Client.java](structural/composite/Client.java) — Client usage
+- [structural/composite/note.md](designPattern/structural/composite/note.md) — Brief explanation
+- [structural/composite/FileSystemItem.java](designPattern/structural/composite/FileSystemItem.java) — Component interface
+- [structural/composite/File.java](designPattern/structural/composite/File.java) — Leaf class
+- [structural/composite/Folder.java](designPattern/structural/composite/Folder.java) — Composite class
+- [structural/composite/Client.java](designPattern/structural/composite/Client.java) — Client usage
 
 **Benefits:**
 - Uniform treatment of leaves and composites
